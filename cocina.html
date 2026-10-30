@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cocina — YO PIDO+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=Rubik:wght@500;600;700&display=swap">
+<style>
+:root {
+  --bg: #0F1720;
+  --surface: #1E293B;
+  --sunken: #0B1118;
+  --line: #334155;
+  --text: #F8FAFC;
+  --muted: #94A3B8;
+  --brand: #E67E22;
+  --brand-soft: rgba(230, 126, 34, 0.15);
+  --warn: #F59E0B;
+  --warn-soft: rgba(245, 158, 11, 0.15);
+  --ok: #10B981;
+  --ok-soft: rgba(16, 185, 129, 0.15);
+  --bad: #EF4444;
+  --font-display: 'Rubik', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-display);
+  padding: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+.brand-title { display: flex; align-items: center; gap: 12px; }
+.logo {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--brand); color: #1F1710;
+  font: 700 18px/1 var(--font-display);
+}
+h1 { margin: 0; font-size: 24px; color: var(--text); }
+.head-right { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.clock {
+  font-family: var(--font-mono); font-size: 18px; color: var(--muted);
+  background: var(--surface); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--line);
+}
+.status {
+  font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
+}
+.status.ok { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+.status.warn { color: var(--warn); border-color: var(--warn); background: var(--warn-soft); }
+.status.bad { color: var(--bad); border-color: var(--bad); }
+.btn-sound {
+  min-height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); font-family: var(--font-display);
+  font-weight: 600; font-size: 14px; cursor: pointer;
+}
+.btn-sound.on { color: var(--ok); border-color: var(--ok); }
+.k-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (min-width: 900px) { .k-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.k-col {
+  background: rgba(30, 41, 59, 0.4); border-radius: 16px; border: 1px solid var(--line);
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.k-header {
+  font-size: 20px; font-weight: 700; padding-bottom: 10px; border-bottom: 3px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.k-col[data-est="nuevo"] .k-header { border-color: var(--brand); }
+.k-col[data-est="preparando"] .k-header { border-color: var(--warn); }
+.k-col[data-est="listo"] .k-header { border-color: var(--ok); }
+.k-count {
+  font-family: var(--font-mono); font-size: 16px; background: var(--surface);
+  border-radius: 999px; padding: 2px 10px; border: 1px solid var(--line);
+}
+.k-list { display: flex; flex-direction: column; gap: 12px; }
+.k-empty { color: var(--muted); font-size: 15px; padding: 12px 2px; text-align: center; }
+.k-card {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px;
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.k-card.is-new { border-color: var(--brand); background: #25201B; animation: pulse 1.5s infinite alternate; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.4); }
+  100% { box-shadow: 0 0 0 8px rgba(230, 126, 34, 0); }
+}
+.k-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-num { font-family: var(--font-mono); font-size: 26px; font-weight: 700; color: var(--brand); }
+.k-where { font-weight: 800; font-size: 18px; color: #FFF; }
+.k-time { font-family: var(--font-mono); font-size: 14px; color: var(--muted); }
+.k-items {
+  list-style: none; margin: 0; padding: 10px 0 0 0; display: flex; flex-direction: column; gap: 6px;
+  font-family: var(--font-mono); font-size: 16px; border-top: 1px dashed var(--line);
+}
+.k-items li { display: flex; justify-content: space-between; gap: 8px; }
+.k-items b { color: #FFF; font-size: 17px; }
+.k-note {
+  background: var(--warn-soft); color: var(--warn); border-radius: 8px;
+  padding: 8px 10px; font-weight: 700; font-size: 14px;
+}
+.k-pay {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-size: 14px; font-weight: 600; color: var(--muted);
+  border-top: 1px dashed var(--line); padding-top: 10px;
+}
+.k-pay .tag { padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); }
+.k-pay .tag.paid { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+.k-pay .tag.pending { color: var(--warn); border-color: var(--warn); background: var(--warn-soft); }
+.btn-act {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 16px; border-radius: 10px; border: 0;
+  font-family: var(--font-display); font-weight: 800; font-size: 16px;
+  cursor: pointer; width: 100%; margin-top: 4px;
+}
+.btn-marcha { background: var(--brand); color: #1F1710; }
+.btn-marcha:hover { filter: brightness(1.1); }
+.btn-listo { background: var(--warn); color: #1F1710; }
+.btn-archivar { background: var(--line); color: var(--text); }
+.btn-pago { background: transparent; color: var(--warn); border: 1.5px solid var(--warn); min-height: 38px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-title">
+    <span class="logo">YP<sup>+</sup></span>
+    <h1>Pantalla de Cocina (KDS)</h1>
+  </div>
+  <div class="head-right">
+    <span class="status" id="status">Conectando…</span>
+    <button type="button" class="btn-sound" id="btn-sound">🔔 Activar sonido</button>
+    <div class="clock" id="clock">00:00:00</div>
+  </div>
+</header>
+
+<div class="k-cols">
+  <div class="k-col" data-est="nuevo">
+    <div class="k-header"><span>Nuevos</span> <span class="k-count" id="cnt-nuevo">0</span></div>
+    <div class="k-list" id="kl-nuevo"></div>
+  </div>
+  <div class="k-col" data-est="preparando">
+    <div class="k-header"><span>En Preparación</span> <span class="k-count" id="cnt-preparando">0</span></div>
+    <div class="k-list" id="kl-preparando"></div>
+  </div>
+  <div class="k-col" data-est="listo">
+    <div class="k-header"><span>Listos para Servir</span> <span class="k-count" id="cnt-listo">0</span></div>
+    <div class="k-list" id="kl-listo"></div>
+  </div>
+</div>
+
+<!-- Misma configuración de Firebase que usa index.html -->
+<script src="firebase-config.js"></script>
+<script>
+(function () {
+'use strict';
+
+const CFG = window.YP_CONFIG || {};
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n || 0).padStart(3, '0');
+const hora = ms => new Date(ms).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+const money = n => Number(n || 0).toFixed(2);
+const hoy = () => {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+};
+
+/* ---------- Sonido ---------- */
+let audioCtx = null, sonidoOn = false;
+function activarSonido() {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    sonidoOn = true;
+    const b = $('#btn-sound'); b.textContent = '🔔 Sonido activado'; b.classList.add('on');
+    pitar();
+  } catch (e) {}
+}
+function pitar() {
+  if (!sonidoOn || !audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+  } catch (e) {}
+}
+$('#btn-sound').addEventListener('click', activarSonido);
+
+/* ---------- Estado de conexión ---------- */
+function setStatus(txt, cls) {
+  const s = $('#status'); s.textContent = txt; s.className = 'status ' + (cls || '');
+}
+
+/* ---------- Capa de datos: MODO LOCAL (mismo navegador) ---------- */
+function crearLocal() {
+  const get = () => { try { return JSON.parse(localStorage.getItem('yp_pedidos') || '{}'); } catch (e) { return {}; } };
+  const set = v => { try { localStorage.setItem('yp_pedidos', JSON.stringify(v)); } catch (e) {} };
+  const yo = Math.random().toString(36).slice(2);
+  let canal = null, cb = null, fecha = '';
+  try { canal = new BroadcastChannel('yopido'); } catch (e) {}
+  const refrescar = () => {
+    if (!cb) return;
+    const all = get(), out = {};
+    for (const k in all) if (all[k].fecha === fecha) out[k] = all[k];
+    cb(out);
+  };
+  window.addEventListener('storage', e => { if (e.key === 'yp_pedidos') refrescar(); });
+  if (canal) canal.onmessage = e => { if (e.data && e.data.k === 'yp_pedidos' && e.data.yo !== yo) refrescar(); };
+  const avisar = () => { try { if (canal) canal.postMessage({ k: 'yp_pedidos', yo: yo }); } catch (e) {} };
+  return {
+    mode: 'local',
+    suscribir(f, fn) { fecha = f; cb = fn; refrescar(); },
+    estado(id, e) {
+      const all = get();
+      if (all[id]) { all[id].estado = e; all[id]['t_' + e] = Date.now(); set(all); avisar(); refrescar(); }
+      return Promise.resolve();
+    },
+    pagar(id) {
+      const all = get();
+      if (all[id]) { all[id].pagado = true; all[id].t_pagado = Date.now(); set(all); avisar(); refrescar(); }
+      return Promise.resolve();
+    },
+    conexion(fn) { fn(true); }
+  };
+}
+
+/* ---------- Capa de datos: FIREBASE (entre dispositivos) ---------- */
+function cargarScript(src) {
+  return new Promise((ok, fail) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = ok; s.onerror = () => fail(new Error('No se pudo cargar ' + src));
+    document.head.appendChild(s);
+  });
+}
+async function crearFirebase(cfg) {
+  const base = 'https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/';
+  await cargarScript(base + 'firebase-app-compat.min.js');
+  await cargarScript(base + 'firebase-database-compat.min.js');
+  firebase.initializeApp(cfg);
+  const db = firebase.database();
+  let apagar = null;
+  return {
+    mode: 'firebase',
+    suscribir(fecha, fn) {
+      if (apagar) apagar();
+      const q = db.ref('pedidos').orderByChild('fecha').equalTo(fecha);
+      const h = q.on('value', s => fn(s.val() || {}), err => { console.error(err); setStatus('Error de permisos en Firebase', 'bad'); });
+      apagar = () => q.off('value', h);
+    },
+    estado(id, e) { const u = { estado: e }; u['t_' + e] = Date.now(); return db.ref('pedidos/' + id).update(u); },
+    pagar(id) { return db.ref('pedidos/' + id).update({ pagado: true, t_pagado: Date.now() }); },
+    conexion(fn) { db.ref('.info/connected').on('value', s => fn(!!s.val())); }
+  };
+}
+
+/* ---------- Pantalla ---------- */
+let DB = null, pedidos = {}, primeraCarga = true, conocidos = {}, fechaActual = hoy();
+
+function render() {
+  const lista = Object.keys(pedidos).map(id => Object.assign({ id: id }, pedidos[id]))
+    .sort((a, b) => (a.creado || 0) - (b.creado || 0));
+
+  ['nuevo', 'preparando', 'listo'].forEach(tipo => {
+    const items = lista.filter(p => p.estado === tipo);
+    $('#cnt-' + tipo).textContent = items.length;
+    const cont = $('#kl-' + tipo);
+    if (!items.length) { cont.innerHTML = '<div class="k-empty">Sin pedidos en esta sección</div>'; return; }
+
+    cont.innerHTML = items.map(p => {
+      const quien = p.nombre ? ' · ' + esc(p.nombre) : '';
+      const donde = p.modalidad === 'llevar'
+        ? 'Para llevar' + quien
+        : (p.mesa ? 'Mesa ' + esc(p.mesa) : 'Mesa sin elegir') + quien;
+
+      let li = '';
+      if (p.base) li += '<li><b>1x ' + esc(p.base.nombre) + '</b></li>';
+      if (p.huevos && p.huevos.cant > 0) li += '<li><span>Huevos estrellados</span> <span>x' + esc(p.huevos.cant) + '</span></li>';
+      (p.porciones || []).forEach(x => { if (x.cant > 0) li += '<li><span>' + esc(x.nombre) + '</span> <span>x' + esc(x.cant) + '</span></li>'; });
+      (p.bebidas || []).forEach(x => { if (x.cant > 0) li += '<li><span>' + esc(x.nombre) + '</span> <span>x' + esc(x.cant) + '</span></li>'; });
+
+      const metodo = p.pago && p.pago.metodo === 'qr' ? 'QR' : 'Efectivo';
+      const tag = p.pagado
+        ? '<span class="tag paid">Pagado ✓</span>'
+        : '<span class="tag pending">' + (p.pago && p.pago.metodo === 'qr' ? 'Verificar pago QR' : 'Cobrar en efectivo') + '</span>';
+      const btnPago = p.pagado ? '' : '<button type="button" class="btn-act btn-pago" data-act="pagar" data-id="' + esc(p.id) + '">Confirmar pago recibido</button>';
+
+      let btn = '';
+      if (tipo === 'nuevo') btn = '<button type="button" class="btn-act btn-marcha" data-act="preparando" data-id="' + esc(p.id) + '">Iniciar Preparación</button>';
+      if (tipo === 'preparando') btn = '<button type="button" class="btn-act btn-listo" data-act="listo" data-id="' + esc(p.id) + '">Marcar Listo</button>';
+      if (tipo === 'listo') btn = '<button type="button" class="btn-act btn-archivar" data-act="entregado" data-id="' + esc(p.id) + '">Entregado / Archivar</button>';
+
+      return '<div class="k-card' + (tipo === 'nuevo' ? ' is-new' : '') + '">' +
+        '<div class="k-top"><span class="k-num">Nº ' + pad(p.numero) + '</span><span class="k-where">' + donde + '</span><span class="k-time">' + (p.creado ? hora(p.creado) : '') + '</span></div>' +
+        '<ul class="k-items">' + li + '</ul>' +
+        (p.nota ? '<div class="k-note">Obs: ' + esc(p.nota) + '</div>' : '') +
+        '<div class="k-pay"><span>' + metodo + (p.total != null ? ' · Bs. ' + money(p.total) : '') + '</span>' + tag + '</div>' +
+        btnPago + btn +
+        '</div>';
+    }).join('');
+  });
+}
+
+function alLlegarPedidos(data) {
+  pedidos = data || {};
+  let hayNuevo = false;
+  for (const id in pedidos) {
+    if (!conocidos[id]) { conocidos[id] = true; if (!primeraCarga && pedidos[id].estado === 'nuevo') hayNuevo = true; }
+  }
+  primeraCarga = false;
+  if (hayNuevo) pitar();
+  render();
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b || !DB) return;
+  const id = b.getAttribute('data-id'), act = b.getAttribute('data-act');
+  b.disabled = true;
+  const p = act === 'pagar' ? DB.pagar(id) : DB.estado(id, act);
+  Promise.resolve(p).catch(err => { console.error(err); b.disabled = false; setStatus('No se pudo guardar el cambio', 'bad'); });
+});
+
+setInterval(() => {
+  $('#clock').textContent = new Date().toLocaleTimeString('es-BO');
+  // Si la pantalla queda abierta toda la noche, al cambiar de día muestra solo los pedidos nuevos del día.
+  if (DB && hoy() !== fechaActual) { fechaActual = hoy(); conocidos = {}; primeraCarga = true; DB.suscribir(fechaActual, alLlegarPedidos); }
+}, 1000);
+
+(async function iniciar() {
+  render();
+  if (CFG.firebase) {
+    try {
+      DB = await crearFirebase(CFG.firebase);
+      DB.conexion(ok => setStatus(ok ? 'En línea (Firebase)' : 'Sin conexión — reintentando…', ok ? 'ok' : 'bad'));
+    } catch (e) {
+      console.error(e);
+      DB = crearLocal();
+      setStatus('Firebase falló: modo local', 'warn');
+    }
+  } else {
+    DB = crearLocal();
+    setStatus('Modo local (solo este navegador)', 'warn');
+  }
+  DB.suscribir(fechaActual, alLlegarPedidos);
+})();
+
+})();
+</script>
+</body>
+</html>
